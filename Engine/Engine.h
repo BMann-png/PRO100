@@ -31,9 +31,6 @@
 #include "Graphics/ParticleSystem.h"
 #include "Graphics/Font.h"
 
-//physics system
-#include "Physics/PhysicsSystem.h"
-
 //Input
 #include "Input/InputSystem.h"
 
@@ -48,7 +45,6 @@
 
 //Components
 #include "Component/SpriteAnimationComponent.h"
-#include "Component/RBPhysicsComponent.h"
 #include "Component/AudioComponent.h"
 #include "Component/TextComponent.h"
 

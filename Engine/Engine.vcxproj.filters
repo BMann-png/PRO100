@@ -106,9 +106,6 @@
     <ClCompile Include="Component\Component.cpp">
       <Filter>Source\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Component\RBPhysicsComponent.cpp">
-      <Filter>Source\Component</Filter>
-    </ClCompile>
     <ClCompile Include="Component\AudioComponent.cpp">
       <Filter>Source\Component</Filter>
     </ClCompile>
@@ -221,9 +218,6 @@
     </ClInclude>
     <ClInclude Include="Core\Serializable.h">
       <Filter>Source\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Component\RBPhysicsComponent.h">
-      <Filter>Source\Component</Filter>
     </ClInclude>
     <ClInclude Include="Component\AudioComponent.h">
       <Filter>Source\Component</Filter>

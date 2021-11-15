@@ -1,5 +1,4 @@
 #pragma once
-#include "box2d/box2d.h"
 #include <cmath>
 #include <iostream>
 
@@ -13,7 +12,6 @@ namespace pbls
 		Vector2(float x) : x{ x }, y { x } {}
 		Vector2(float x, float y) : x{ x }, y{ y } {}
 		Vector2(int x, int y) : x{ static_cast<float>(x) }, y{ static_cast<float>(y) } {}
-		Vector2(b2Vec2 v2) : x{ v2.x }, y{ v2.y } {}
 
 		float operator [] (size_t index) const { return (&x) [ index ]; }
 		float& operator [] (size_t index) { return (&x)[index]; }
@@ -45,8 +43,6 @@ namespace pbls
 
 		bool operator == (const Vector2& v) const { return x == v.x && y == v.y; }
 		bool operator != (const Vector2& v) const { return x != v.x || y != v.y; }
-
-		operator b2Vec2() const { return b2Vec2{x, y}; };
 
 		friend std::ostream& operator << (std::ostream& stream, Vector2& v);
 
