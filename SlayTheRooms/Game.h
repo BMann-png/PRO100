@@ -37,8 +37,6 @@ private:
 	void PlayerDead();
 	void GameOver();
 
-	void OnAddScore(const pbls::Event& event);
-
 public:
 	std::unique_ptr<pbls::Engine> engine;
 	std::unique_ptr<pbls::Scene> scene;

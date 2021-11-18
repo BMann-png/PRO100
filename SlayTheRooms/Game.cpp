@@ -18,7 +18,6 @@ void Game::Initialize()
 	pbls::SeedRandom(static_cast<unsigned int>(time(nullptr)));
 	pbls::SetFilePath("../Resources");
 
-	engine->Get<pbls::EventSystem>()->Subscribe("onAddScore", std::bind(&Game::OnAddScore, this, std::placeholders::_1));
 
 }
 
