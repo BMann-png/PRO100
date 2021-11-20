@@ -1,7 +1,7 @@
 {
    "actors":[
       {
-         "type":"Card",
+         "type":"Actor",
          "name":"Card",
          "tag":"Card",
          "prototype":true,
