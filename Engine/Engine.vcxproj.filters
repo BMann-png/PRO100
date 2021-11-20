@@ -32,6 +32,9 @@
     <Filter Include="Source\Component">
       <UniqueIdentifier>{f396f16a-9f2c-44ab-8317-5f5d20fc14d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{4e574cd2-548d-4326-8965-b2891942ab5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\EventSystem.cpp">
@@ -228,5 +231,10 @@
     <ClInclude Include="Object\Tilemap.h">
       <Filter>Source\Object</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Build\Resources\JsonFiles\scene.txt">
+      <Filter>Resources</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,0 +1,30 @@
+{
+   "actors":[
+      {
+         "type":"Card",
+         "name":"Card",
+         "tag":"Card",
+         "prototype":true,
+         "transform":{
+            "position":[
+               400,
+               300
+            ],
+            "scale":[
+               1,
+               1
+            ],
+            "rotation":0
+         },
+         "components":[
+            {
+               "type":"SpriteComponent",
+               "textureName":"card.png"
+            },
+            {
+                "type":"Card"
+            }
+         ]
+      }
+   ]
+}

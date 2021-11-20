@@ -1,5 +1,8 @@
 #include "Game.h"
 
+#include "CardComponents/Player.h"
+#include "CardComponents/Card.h"
+
 void Game::Initialize()
 {
 	//create engine
@@ -8,7 +11,7 @@ void Game::Initialize()
 	engine->Get<pbls::Renderer>()->Create("GAT150", 800, 600);
 	
 	//register components
-	
+	REGISTER_CLASS(pbls::Card)
 
 
 	//create scene
@@ -72,7 +75,23 @@ void Game::Draw()
 
 void Game::Reset()
 {
-	
+	rapidjson::Document document;
+	bool success = pbls::json::Load("JsonFiles/scene.txt", document);
+	assert(success);
+
+	scene->Read(document);
+
+
+	std::vector<pbls::Actor*> newHand;
+
+	for (int i = 0; i < 4; i++)
+	{
+		newHand.push_back(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Card").get());
+		newHand[i]->GetComponent<pbls::Card>()->RandomAbility();
+	}
+
+	Player player(100, newHand, scene.get());
+
 }
 
 void Game::Title()
