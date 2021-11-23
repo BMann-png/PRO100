@@ -41,8 +41,5 @@
     <ClInclude Include="CardComponents\Card.h">
       <Filter>Source Files\CardComponents</Filter>
     </ClInclude>
-    <ClInclude Include="CardComponents\CardAbilites.h">
-      <Filter>Source Files\CardComponents</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

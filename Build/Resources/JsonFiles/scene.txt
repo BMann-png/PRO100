@@ -3,7 +3,7 @@
       {
          "type":"Actor",
          "name":"Card",
-         "tag":"Card",
+         "tag":"",
          "prototype":true,
          "transform":{
             "position":[
@@ -11,8 +11,8 @@
                300
             ],
             "scale":[
-               1,
-               1
+               0.75,
+               0.75
             ],
             "rotation":0
          },

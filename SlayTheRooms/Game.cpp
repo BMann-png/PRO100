@@ -11,7 +11,7 @@ void Game::Initialize()
 	engine->Get<pbls::Renderer>()->Create("GAT150", 800, 600);
 	
 	//register components
-	REGISTER_CLASS(pbls::Card)
+	REGISTER_CLASS(Card)
 
 
 	//create scene
@@ -69,7 +69,12 @@ void Game::Update()
 
 void Game::Draw()
 {
-	
+	engine->Get<pbls::Renderer>()->BeginFrame();
+
+	engine->Draw(engine->Get<pbls::Renderer>());
+	scene->Draw(engine->Get<pbls::Renderer>());
+
+	engine->Get<pbls::Renderer>()->EndFrame();
 
 }
 
@@ -81,21 +86,22 @@ void Game::Reset()
 
 	scene->Read(document);
 
-
-	std::vector<pbls::Actor*> newHand;
-
 	for (int i = 0; i < 4; i++)
 	{
-		newHand.push_back(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Card").get());
-		newHand[i]->GetComponent<pbls::Card>()->RandomAbility();
+		auto card = pbls::ObjectFactory::Instance().Create<pbls::Actor>("Card");
+		card->GetComponent<Card>()->RandomAbility();
+		card->tag = "Player";
+		scene->AddActor(std::move(card));
 	}
 
-	Player player(100, newHand, scene.get());
+	state = eState::Title;
 
 }
 
 void Game::Title()
 {
+	Player player(100, scene.get());
+	state = eState::StartGame;
 	
 }
 
