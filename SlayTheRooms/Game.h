@@ -16,7 +16,10 @@ public:
 		StartLevel,
 		Level,
 		PlayerDead,
-		GameOver
+		GameOver,
+		Combat,
+		Loot,
+		Shop
 	};
 
 public:
@@ -32,10 +35,15 @@ private:
 	void Reset();
 	void Title();
 	void StartGame();
+	void Combat();
+	void Loot();
+	void Shop();
 	void StartLevel();
 	void Level();
 	void PlayerDead();
 	void GameOver();
+	void onClick(const pbls::Event& event);
+
 
 public:
 	std::unique_ptr<pbls::Engine> engine;
@@ -48,5 +56,9 @@ private:
 	int score{ 0 };
 	float stateTimer{ 0 };
 	float spawnTimer{ 0 };
+	int cardIndex = 0;
 
+	int gold = 0;
+
+	std::vector<std::unique_ptr<pbls::Actor>> cardArray;
 };

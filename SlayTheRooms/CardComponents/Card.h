@@ -24,9 +24,13 @@ public:
 
 	~Card() {};
 	Card() {}
-	Card(std::string name, int value = 0, int type = 0);
+	Card(std::string name, int index, int value = 0, int type = 0);
 
-	void RandomAbility();
+	int GetValue() { return ability.value; }
+	eType GetType() { return ability.type; }
+	std::string GetName() { return ability.name; }
+
+	void RandomAbility(int index);
 	//void UseAbility(Actor* other);
 
 	void Create() override;
@@ -37,13 +41,15 @@ public:
 
 	std::string toString();
 
+public:
+	int index = 0;
+
 private:
 	Ability ability;
 
-	std::string abilities[9] = { "Shadowslash", "Flamearrow", "Manabullet", 
+	std::string abilities[9] = { "Shadowslash", "Flamearrow", "Manabullet",
 								"Stonewall", "Heroic Shield", "Smoke Bomb",
 								"Firey Embers", "Heal", "Maiden's Grace" };
 
-	
-};
 
+};
