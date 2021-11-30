@@ -19,7 +19,9 @@ public:
 		GameOver,
 		Combat,
 		Loot,
-		Shop
+		StartShop,
+		Shop,
+		EndShop
 	};
 
 public:
@@ -37,7 +39,9 @@ private:
 	void StartGame();
 	void Combat();
 	void Loot();
+	void StartShop();
 	void Shop();
+	void EndShop();
 	void StartLevel();
 	void Level();
 	void PlayerDead();

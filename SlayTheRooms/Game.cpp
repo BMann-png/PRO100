@@ -2,6 +2,7 @@
 #include "CardComponents/Player.h"
 #include "CardComponents/Card.h"
 #include <array>
+#include <iostream>
 
 
 Player player;
@@ -35,6 +36,12 @@ void Game::Initialize()
 
 	pbls::SeedRandom(static_cast<unsigned int>(time(nullptr)));
 	pbls::SetFilePath("../Resources");
+
+	rapidjson::Document document;
+	bool success = pbls::json::Load("JsonFiles/scene.txt", document);
+	assert(success);
+
+	scene->Read(document);
 
 	engine->Get<pbls::EventSystem>()->Subscribe("cardClick", std::bind(&Game::onClick, this, std::placeholders::_1));
 
@@ -81,8 +88,14 @@ void Game::Update()
 	case Game::eState::Loot:
 		Loot();
 		break;
+	case Game::eState::StartShop:
+		StartShop();
+		break;
 	case Game::eState::Shop:
 		Shop();
+		break;
+	case Game::eState::EndShop:
+		EndShop();
 		break;
 	default:
 		break;
@@ -131,19 +144,19 @@ void Game::Title()
 void Game::StartGame()
 {
 	int nextRoom = pbls::RandomRangeInt(0, 100);
-	if (nextRoom < 100)
+	if (nextRoom < 50)
 	{
 		turnCount = 0;
 		state = eState::StartLevel;
-	}/*
+	}
 	else if (nextRoom < 75 && nextRoom >= 50)
 	{
 		state = eState::Loot;
 	}
 	else
 	{
-		state = eState::Shop;
-	}*/
+		state = eState::StartShop;
+	}
 }
 
 void Game::Combat()
@@ -181,38 +194,39 @@ void Game::Combat()
 void Game::Loot()
 {
 	int addedGold = pbls::RandomRangeInt(0, 10);
-	std::string loot = "You have gained ";
-	loot += addedGold;
-	loot += " gold!";
-	std::cout << loot << std::endl;
+	std::cout << "You have gained " << addedGold << " gold!" << std::endl;
 	gold += addedGold;
 	state = eState::StartGame;
 }
 
+void Game::StartShop()
+{
+	std::cout << "Welcome to the Shop!" << std::endl;
+
+	state = eState::Shop;
+}
+
 void Game::Shop()
 {
-	bool shopping = true;
-
-	do
+	
+	if (engine->Get<pbls::InputSystem>()->GetKeyState(SDL_SCANCODE_SPACE) == pbls::InputSystem::eKeyState::Pressed)
 	{
-		if (engine->Get<pbls::InputSystem>()->GetKeyState(SDL_SCANCODE_SPACE) == pbls::InputSystem::eKeyState::Pressed)
-		{
-			gold -= 5;
-			shopping = false;
-		}
-	} while (shopping);
+		gold -= 5;
+		
+		state = eState::EndShop;
+	}
+		
+}
 
+void Game::EndShop()
+{
 	std::cout << "You bought NOTHING! for 5 gold!" << std::endl;
 	state = eState::StartGame;
 }
 
 void Game::StartLevel()
 {
-	rapidjson::Document document;
-	bool success = pbls::json::Load("JsonFiles/scene.txt", document);
-	assert(success);
-
-	scene->Read(document);
+	
 
 	int cardCount = 4;
 
@@ -324,6 +338,7 @@ void Game::onClick(const pbls::Event& event)
 			enemyDefense += cardArray[index]->GetComponent<Card>()->GetValue(); turnCount++;
 			std::cout << "Enemy Defense: " << enemyDefense << std::endl;
 		}
+		std::cout << cardArray[index]->GetComponent<Card>()->toString() << std::endl;
 		playerDefense = player.GetDefense();
 		enemyDefense = enemy.GetDefense();
 	}
