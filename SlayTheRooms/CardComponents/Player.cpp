@@ -9,9 +9,15 @@ void Player::Initialize()
 {
 	std::vector<pbls::Actor*> hand = scene->GetActors<pbls::Actor>();
 
-	for (int i = 0; i < hand.size(); i++)
+	int i = 0;
+
+	for (pbls::Actor* card : hand)
 	{
-		hand[i]->transform.position = { 175 + (150 * i), 300 };
+		if (card->GetComponent<Card>())
+		{
+			card->transform.position = { 175 + (150 * i), 300 };
+			i++;
+		}
 	}
 
 

@@ -144,17 +144,21 @@ void Game::Title()
 void Game::StartGame()
 {
 	int nextRoom = pbls::RandomRangeInt(0, 100);
+	scene->RemoveAllActors();
 	if (nextRoom < 50)
 	{
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("FightBackground")));
 		turnCount = 0;
 		state = eState::StartLevel;
 	}
 	else if (nextRoom < 75 && nextRoom >= 50)
 	{
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("LootBackground")));
 		state = eState::Loot;
 	}
 	else
 	{
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("ShopBackground")));
 		state = eState::StartShop;
 	}
 }
@@ -172,8 +176,6 @@ void Game::Combat()
 	{
 		std::cout << "You Died" << std::endl;
 
-		scene->RemoveAllActors();
-
 		state = eState::Reset;
 	}
 	if (enemyHealth <= 0)
@@ -183,8 +185,6 @@ void Game::Combat()
 		enemyDefense = enemy.GetDefense();
 
 		std::cout << "You Win!!" << std::endl;
-
-		scene->RemoveAllActors();
 
 		std::cout << "Press Space for next room" << std::endl;
 		state = eState::Level;
@@ -251,6 +251,9 @@ void Game::StartLevel()
 
 		//scene->AddActor(std::move(card));
 	}
+
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Player")));
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Enemy")));
 
 	state = eState::Combat;
 }
