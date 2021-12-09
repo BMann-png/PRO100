@@ -13,7 +13,26 @@ Card::Card(std::string name, int index, int value, int type)
 
 }
 
-void Card::RandomAbility(int index)
+std::string Card::GetTypeString()
+{
+	switch ((int)ability.type)
+	{
+	case 0:
+		return "damage";
+			break;
+	case 1:
+		return "defense";
+			break;
+	case 2:
+		return "heal";
+			break;
+	default:
+		break;
+	}
+	return std::string();
+}
+
+void Card::RandomAbility(int index, int CardBonus)
 {
 	int i = pbls::RandomInt(8);
 	ability.name = abilities[i];
@@ -51,6 +70,13 @@ void Card::RandomAbility(int index)
 		break;
 	}
 	ability.value = pbls::RandomInt(5) + 1;
+
+	texture = i;
+
+	if (i < 3)
+	{
+		ability.value += CardBonus;
+	}
 
 	this->index = index;
 

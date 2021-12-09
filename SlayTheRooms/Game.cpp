@@ -45,6 +45,11 @@ void Game::Initialize()
 
 	engine->Get<pbls::EventSystem>()->Subscribe("cardClick", std::bind(&Game::onClick, this, std::placeholders::_1));
 
+	for (int i = 0; i < 9; i++)
+	{
+		textures.push_back(engine->Get<pbls::ResourceSystem>()->Get<pbls::Texture>(textureNames[i], engine->Get<pbls::Renderer>()));
+	}
+
 }
 
 void Game::Shutdown()
@@ -126,9 +131,26 @@ void Game::Reset()
 	enemyAttack = enemy.GetAttack();
 	enemyDefense = enemy.GetDefense();
 
+	gold = 5;
+	cardBonus = 0;
+
 	std::string title = "Title Screen: Press Space to Start";
 	std::cout << title << std::endl;
+
+	scene->RemoveAllActors();
 	
+	if (playerDied)
+	{
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("GameOver")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("pressSpace")));
+	}
+	else
+	{
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("TitleBackground")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("TitleText")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("pressSpace")));
+	}
+
 	state = eState::Title;
 }
 
@@ -136,6 +158,7 @@ void Game::Title()
 {
 	if (engine->Get<pbls::InputSystem>()->GetKeyState(SDL_SCANCODE_SPACE) == pbls::InputSystem::eKeyState::Pressed)
 	{
+		scene->RemoveAllActors();
 		state = eState::StartGame;
 	}
 
@@ -154,37 +177,57 @@ void Game::StartGame()
 	else if (nextRoom < 75 && nextRoom >= 50)
 	{
 		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("LootBackground")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Chest")));
 		state = eState::Loot;
 	}
 	else
 	{
 		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("ShopBackground")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("ShopItem1")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("ShopItem2")));
+		scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Goldtxt")));
 		state = eState::StartShop;
 	}
 }
 
 void Game::Combat()
 {
+	scene->FindActor("PHealthtxt")->GetComponent<pbls::TextComponent>()->SetText("Player Health: " + std::to_string(playerHealth));
+	scene->FindActor("PDefensetxt")->GetComponent<pbls::TextComponent>()->SetText("Player Defense: " + std::to_string(playerDefense));
+	scene->FindActor("Goldtxt")->GetComponent<pbls::TextComponent>()->SetText(std::to_string(gold) + "gp");
+	scene->FindActor("EHealthtxt")->GetComponent<pbls::TextComponent>()->SetText("Enemey Health: " + std::to_string(enemyHealth));
+	scene->FindActor("EDefensetxt")->GetComponent<pbls::TextComponent>()->SetText("Enemy Defense: " + std::to_string(enemyDefense));
+
 
 	if (turnCount == 0)
 	{
-		player = Player(10, scene.get());
+		player = Player(startingPlayerHealth, scene.get());
 		enemy = Player(10, scene.get());
+		playerHealth = player.GetHealth();
+
+		player.Initialize();
+		
+		turnCount += 2;
 	}
 
 	if (playerHealth <= 0)
 	{
 		std::cout << "You Died" << std::endl;
 
+		playerDied = true;
+
 		state = eState::Reset;
 	}
-	if (enemyHealth <= 0)
+	if (enemyHealth <= 0 || turnCount >= 50)
 	{
-		enemyHealth = enemy.GetHealth();
+		enemyHealth = 10;
 		enemyAttack = enemy.GetAttack();
 		enemyDefense = enemy.GetDefense();
 
+		if (turnCount >= 50) std::cout << "By attrition....";
 		std::cout << "You Win!!" << std::endl;
+
+		gold += 5;
 
 		std::cout << "Press Space for next room" << std::endl;
 		state = eState::Level;
@@ -193,10 +236,13 @@ void Game::Combat()
 
 void Game::Loot()
 {
-	int addedGold = pbls::RandomRangeInt(0, 10);
-	std::cout << "You have gained " << addedGold << " gold!" << std::endl;
-	gold += addedGold;
-	state = eState::StartGame;
+	if (engine->Get<pbls::InputSystem>()->GetButtonState(0) == pbls::InputSystem::eKeyState::Pressed)
+	{
+		int addedGold = pbls::RandomRangeInt(0, 10);
+		std::cout << "You have gained " << addedGold << " gold!" << std::endl;
+		gold += addedGold;
+		state = eState::StartGame;
+	}
 }
 
 void Game::StartShop()
@@ -208,11 +254,39 @@ void Game::StartShop()
 
 void Game::Shop()
 {
-	
+	scene->FindActor("Goldtxt")->GetComponent<pbls::TextComponent>()->SetText(std::to_string(gold) + "gp");
+	if (engine->Get<pbls::InputSystem>()->GetButtonState(0) == pbls::InputSystem::eKeyState::Pressed)
+	{
+		if (gold >= 5)
+		{
+			if (engine->Get<pbls::InputSystem>()->GetMousePosition().x >= scene->FindActor("ShopItem1")->transform.position.x - 50 && engine->Get<pbls::InputSystem>()->GetMousePosition().x <= scene->FindActor("ShopItem1")->transform.position.x + 50)
+			{
+				if (engine->Get<pbls::InputSystem>()->GetMousePosition().y >= scene->FindActor("ShopItem1")->transform.position.y - 25 && engine->Get<pbls::InputSystem>()->GetMousePosition().y <= scene->FindActor("ShopItem1")->transform.position.y + 25)
+				{
+					startingPlayerHealth += 5;
+					gold -= 5;
+					std::cout << "You Bought HP!" << std::endl;
+				}
+			}
+		}
+	}
+	if (engine->Get<pbls::InputSystem>()->GetButtonState(0) == pbls::InputSystem::eKeyState::Pressed)
+	{
+		if(gold >=5)
+		{
+			if (engine->Get<pbls::InputSystem>()->GetMousePosition().x >= scene->FindActor("ShopItem2")->transform.position.x - 50 && engine->Get<pbls::InputSystem>()->GetMousePosition().x <= scene->FindActor("ShopItem2")->transform.position.x + 50)
+			{
+				if (engine->Get<pbls::InputSystem>()->GetMousePosition().y >= scene->FindActor("ShopItem2")->transform.position.y - 25 && engine->Get<pbls::InputSystem>()->GetMousePosition().y <= scene->FindActor("ShopItem2")->transform.position.y + 25)
+				{
+					cardBonus += 1;
+					gold -= 5;
+					std::cout << "You Bought Damage!" << std::endl;
+				}
+			}
+		}
+	}
 	if (engine->Get<pbls::InputSystem>()->GetKeyState(SDL_SCANCODE_SPACE) == pbls::InputSystem::eKeyState::Pressed)
 	{
-		gold -= 5;
-		
 		state = eState::EndShop;
 	}
 		
@@ -220,7 +294,7 @@ void Game::Shop()
 
 void Game::EndShop()
 {
-	std::cout << "You bought NOTHING! for 5 gold!" << std::endl;
+	std::cout << "Thanks for coming!!" << std::endl;
 	state = eState::StartGame;
 }
 
@@ -233,9 +307,11 @@ void Game::StartLevel()
 	for (int i = 0; i < cardCount; i++)
 	{
 		auto card = pbls::ObjectFactory::Instance().Create<pbls::Actor>("Card");
-		card->GetComponent<Card>()->RandomAbility(cardIndex);
+		card->GetComponent<Card>()->RandomAbility(cardIndex, cardBonus);
+		card->GetComponent<pbls::SpriteComponent>()->texture = textures[card->GetComponent<Card>()->GetTexture()];
 		card->tag = "Player";
 		std::cout << card->GetComponent<Card>()->toString() << std::endl;
+
 		scene->AddActor(std::move(card));
 		cardIndex++;
 	}
@@ -254,6 +330,12 @@ void Game::StartLevel()
 
 	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Player")));
 	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Enemy")));
+
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("PHealthtxt")));
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("PDefensetxt")));
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("Goldtxt")));
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("EHealthtxt")));
+	scene->AddActor(std::move(pbls::ObjectFactory::Instance().Create<pbls::Actor>("EDefensetxt")));
 
 	state = eState::Combat;
 }

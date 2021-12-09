@@ -28,9 +28,11 @@ public:
 
 	int GetValue() { return ability.value; }
 	eType GetType() { return ability.type; }
+	std::string GetTypeString();
 	std::string GetName() { return ability.name; }
+	int GetTexture() { return texture; }
 
-	void RandomAbility(int index);
+	void RandomAbility(int index, int CardBonus = 0);
 	//void UseAbility(Actor* other);
 
 	void Create() override;
@@ -51,5 +53,5 @@ private:
 								"Stonewall", "Heroic Shield", "Smoke Bomb",
 								"Firey Embers", "Heal", "Maiden's Grace" };
 
-
+	int texture = 10;
 };

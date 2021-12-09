@@ -12,10 +12,7 @@ class Player
 
 public:
 	Player() = default;
-	Player(int health, pbls::Scene* scene) : health{ health }, scene{ scene }
-	{
-		Initialize();
-	}
+	Player(int health, pbls::Scene* scene) : health{ health }, scene{ scene } {}
 
 	~Player();
 
